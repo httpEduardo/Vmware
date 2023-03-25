@@ -1,77 +1,57 @@
-# 📖 README
-This repo helps build virtual machines using Packer on VMware ESXi hosts.
+📖 Instruções
 
-- [x] Build VMs on a simple network with just DHCP and DNS
-- [x] Doesn't use TFTP server for netbooting
-- [x] Doesn't use a separate HTTP server
-- [x] Built-in HTTP templating server
-- [x] Gracefully handle CTRL+C
-- [x] Build VMs in parallel, for instance `xargs -P4 ...`
+Este repositório ajuda a criar máquinas virtuais usando o Packer em hosts VMware ESXi.
 
-**Requirements**
-- vSphere 7.0U3 ESXi host with SSH access enabled.
-- A control machine with `go`, `ansible`, `hashicorp/packer` and `openssl` binaries.
+[x] Construir VMs em uma rede simples com apenas DHCP e DNS
+[x] Não usar servidor TFTP para inicialização pela rede
+[x] Não usar um servidor HTTP separado
+[x] Servidor de modelos HTTP integrado
+[x] Manipular o CTRL+C adequadamente
+[x] Construir VMs em paralelo, por exemplo xargs -P4 ...
+Requisitos
 
-**Supported VM Builds**
-status | os | version | machine specs
----| --- | --- | ---
-👍 | centos | 8-stream | 4 vCPU, 4 GiB vRAM, 100 GiB NVMe vDisk
-👍 | debian | bullseye | 4 vCPU, 4 GiB vRAM, 100 GiB NVMe vDisk
-👍 | ubuntu | focal | 4 vCPU, 6 GiB vRAM, 100 GiB NVMe vDisk
-👍 | ubuntu | jammy | 4 vCPU, 6 GiB vRAM, 100 GiB NVMe vDisk
-👍 | photon | 4 | 4 vCPU, 4 GiB vRAM, 100 GiB NVMe vDisk
-👍 | coreos | stable-stream | 4 vCPU, 4 GiB vRAM, 100 GiB NVMe vDisk
+Host ESXi vSphere 7.0U3 com acesso SSH habilitado.
+Uma máquina de controle com binários go, ansible, hashicorp/packer e openssl.
+Construções de VM suportadas
 
-# 🌱 Getting started
-1. Run the `prepare_installers.yaml` Ansible playbook.
-1. Create a `installers/overrides.pkrvars.hcl` file.  This file contains Packer variables that overrides default values.
-1. Perform `make`, the `builder` binary will be placed at the root of the repository folder.
-1. Run the `builder` binary.  Use `-h` flag to see the arguments needed.
+status	os	versão	especificações da máquina
+👍	centos	8-stream	4 vCPU, 4 GiB vRAM, 100 GiB NVMe vDisk
+👍	debian	bullseye	4 vCPU, 4 GiB vRAM, 100 GiB NVMe vDisk
+👍	ubuntu	focal	4 vCPU, 6 GiB vRAM, 100 GiB NVMe vDisk
+👍	ubuntu	jammy	4 vCPU, 6 GiB vRAM, 100 GiB NVMe vDisk
+👍	photon	4	4 vCPU, 4 GiB vRAM, 100 GiB NVMe vDisk
+👍	coreos	stable-stream	4 vCPU, 4 GiB vRAM, 100 GiB NVMe vDisk
 
-## ⚙️ `overrides.pkrvars.hcl`
-The `installers/overrides.pkrvars.hcl` file is used by the builder to pass in Packer variable values that overrides the default values.
+🌱 Começando
 
-```hcl2
-#
-# ESX variables
-#
-esx_server    = "" # ESX host
-esx_username  = "" # ESX user with admin and SSH access
-esx_password  = "" # ESX user password
-esx_network   = "" # ESX virtual network name for the VM
-esx_datastore = "" # ESX datastore name to place the VM's VMDK files
+Execute o playbook Ansible prepare_installers.yaml.
+Crie um arquivo installers/overrides.pkrvars.hcl. Este arquivo contém variáveis ​​do Packer que substituem os valores padrão.
+Execute o make, o binário builder será colocado na raiz da pasta do repositório.
+Execute o binário builder. Use a flag -h para ver os argumentos necessários.
+⚙️ overrides.pkrvars.hcl
+O arquivo installers/overrides.pkrvars.hcl é usado pelo construtor para passar valores de variáveis ​​do Packer que substituem os valores padrão.
+
+init
 
 #
-# VM variables
+# Variáveis ESX
 #
-vm_username       = "" # VM user to create
-vm_password       = "" # VM user's password
-vm_ssh_public_key = "" # SSH public key to place into the VM user's SSH authorized_keys file
-```
+esx_server    = "" # host ESX
+esx_username  = "" # usuário ESX com acesso admin e SSH
+esx_password  = "" # senha do usuário ESX
+esx_network   = "" # nome da rede virtual ESX para a VM
+esx_datastore = "" # nome do datastore ESX para colocar os arquivos VMDK da VM
 
-## ⭐️ Usage
-```
+#
+# Variáveis da VM
+#
+vm_username       = "" # usuário a ser criado na VM
+vm_password       = "" # senha do usuário da VM
+vm_ssh_public_key = "" # chave pública SSH para colocar no arquivo authorized_keys do usuário SSH da VM
+⭐️ Uso
+lua
+
 Usage of ./builder:
   -c string
-        The path to a Packer variables file that can override the default Packer variable values. (default "/root/vmware-builder/installers/overrides.pkrvars.hcl")
+        O caminho para um arquivo de variáveis ​​do Packer que pode substituir os valores de variáveis ​​do Packer padrão. (padrão "/root/vmware-builder/installers/overrides.pkrvars.hcl")
   -e string
-        If the Packer build fails do: clean up, abort, ask, or run-cleanup-provisioner. (default "ask")
-  -n string
-        Virtual machine name. (Required)
-  -o string
-        Operating system. Examples: debian, centos, ubuntu. (Required)
-  -packer-path string
-        The path to the Hashicorp Packer binary. (default "/usr/local/bin/packer")
-  -r string
-        Operating system release name. Examples: bullseye, 8-stream, focal, jammy. (Required)
-  -version
-        Print program version.
-```
-
-## 👏 Appendix
-description | link 
---- | ---
-iPXE CD used in the virtual machine build process | <https://github.com/tlhakhan/ipxe-iso>
-hashicorp/packer releases | <https://github.com/hashicorp/packer/releases>
-Install Packer doc | <https://learn.hashicorp.com/tutorials/packer/getting-started-install>
-# Vmware
