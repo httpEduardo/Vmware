@@ -1,0 +1,15 @@
+#
+# ESX variables
+#
+esx_server    = "" # ESX host
+esx_username  = "" # ESX user with admin and SSH access 
+esx_password  = "" # ESX user password
+esx_network   = "" # ESX virtual network name for the VM
+esx_datastore = "" # ESX datastore name to place the VM's VMDK files
+
+#
+# VM variables
+#
+vm_username       = "" # VM user to create
+vm_password       = "" # VM user's password
+vm_ssh_public_key = "" # SSH public key to place into the VM user's SSH authorized_keys file
